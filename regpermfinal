@@ -1,0 +1,30 @@
+#get the current permissions
+$acl = Get-Acl 'HKLM:\software'
+$acl.Access
+
+
+#set the account
+$idRef = [System.Security.Principal.SecurityIdentifier]$sid = "S-1-15-3-1024-1065365936-1281604716-3511738428-1654721687-432734479-3232135806-4053264122-3456934681"
+
+#set the permissions
+$regRights = [System.Security.AccessControl.RegistryRights]::Readkey
+
+$inhFlags = [System.Security.AccessControl.InheritanceFlags]::ContainerInherit
+
+$prFlags = [System.Security.AccessControl.PropagationFlags]::None
+
+$acType = [System.Security.AccessControl.AccessControlType]::Allow
+
+
+#create the rule
+$rule = New-Object System.Security.AccessControl.RegistryAccessRule ($idRef, $regRights, $inhFlags, $prFlags, $acType)
+
+#declare
+$rule
+$acl
+
+#Assign the rule
+$acl.AddAccessRule($rule)
+
+#update the registry path the rule
+$acl | Set-Acl -Path 'HKLM:\software'
